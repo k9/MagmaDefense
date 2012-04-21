@@ -1,3 +1,7 @@
+function rgbByteToFloat(r, g, b) {
+    return [r / 256, g / 256, b / 256];
+}
+
 function mix(start, end, mix) {
     return start * (1 - mix) + end * mix;
 }
