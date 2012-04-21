@@ -8,7 +8,7 @@ function World(worldSlices) {
         smoothInterp);  
 
     this.dirtLayer = new WorldLayer(this, worldSlices, 0,
-        function(i) { return 100; }, 
+        function(i) { return 95 + Math.random() * 10; }, 
         smoothInterp);
 
     this.waterLayer = new WorldLayer(this, worldSlices, -5, 
@@ -31,9 +31,10 @@ function WorldLayer(world, slices, z, heightFn, interpFn) {
 }
 
 $.extend(World.prototype, {
-    modifyRegion: function(slice, layer, amount) {
-        this.dirtLayer.radii[slice] += amount;
-        this.makeMesh(this.dirtLayer);
+    modifyRegion: function(slice, layerName, amount) {
+        var layer = this[layerName + "Layer"];
+        layer.radii[slice] += amount;
+        this.makeMesh(layer);
     },
 
     makeMesh: function(layer) {

@@ -3,7 +3,8 @@ ul { list-style: none }
 body { font-family: helvetica; background: #444; color: #444; font-size: 14px; margin-top: 50px }
 h1 { font-size: 35px; letter-spacing: -1px; text-align: center; margin-bottom: 5px; color: #eee }
 #gameContainer { position: relative; width: 960px; height: 600px; margin: 0 auto }
-#controls { position: absolute; bottom: 0; left: 0; right: 0; height: 150px; background: white }
-#controls>li { display: inline-block; margin-left: 3%; width: 21%; font-weight: bold }
-#controls>li p { text-align: center; padding: 10px 10px 0 10px }
-#controls>li li { text-align: center; width: 50px; padding: 5px; margin: 0 auto; }
+#controls { position: absolute; top: 0; bottom: 0; left: 0; width: 150px; background: white; padding-top: 10px }
+#controls>li { margin-top: 10px; font-weight: bold }
+#controls>li p { text-transform: capitalize; text-align: center; padding: 10px 10px 0 10px; font-size: 18px }
+#controls>li .button { display: block; margin: 2px auto; border: 1px solid #888; border-radius: 5px; box-shadow: 0 1px 3px 0 #888;  width: 30px; font-size: 24px; padding: 0; cursor: pointer; background: #f8f8f8; font-weight: bold; }
+#controls>li .button:hover { background: #fff; box-shadow: 0 2px 3px 0 #888 }

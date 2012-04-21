@@ -6,7 +6,7 @@ var render = function() {
     gl.pushMatrix();
     game.shaders.solid.uniforms({ color: [0.4, 0.4, 0.9] }).draw(game.world.waterLayer.mesh);
     game.shaders.solid.uniforms({ color: [0.41, 0.25, 0.15] }).draw(game.world.dirtLayer.mesh);
-        game.shaders.solid.uniforms({ color: [0.7, 0.7, 0.7] }).draw(game.world.rockLayer.mesh);
+    game.shaders.solid.uniforms({ color: [0.7, 0.7, 0.7] }).draw(game.world.rockLayer.mesh);
     game.shaders.solid.uniforms({ color: [1.0, 0.43, 0.26] }).draw(game.world.magmaLayer.mesh);
     gl.popMatrix();
 };

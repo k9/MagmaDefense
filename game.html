@@ -20,15 +20,15 @@
 <body>
 <h1>Game Title</h1>
 <div id="gameContainer">
-<ul id="controls">
-<li class="magmaLayer"><p>Magma</p></li>
-<li class="rockLayer"><p>Rock</p></li>
-<li class="dirtLayer"><p>Dirt</p></li>
-<li class="cloudLayer"><p>Clouds</p></li>
-</ul>
+<ul id="controls"></ul>
 <script>
-$("#controls>li").append(
-    $('<ul><li class="plus">+</li><li class="pct">50%</li><li class="minus">-</li></ul>'));
+$.each(["cloud", "water", "dirt", "rock", "magma"], function(i, layer) {
+    $("#controls").append(
+        $("<li>").data("layer", layer)
+            .append($("<p>").text(layer))
+            .append("<input type='button' class='plus button' value='+'>")
+            .append("<input type='button' class='minus button' value='-'>"));
+});
 
 window.game = new Game();
 game.start();

@@ -13,18 +13,23 @@ window.Game = function() {
     this.lastPos = null;
 
     var that = this;
-    $(document).on({
+    $("#gameContainer").on({
         mousemove: function(e) { that.mousemove(e); },
         mousedown: function(e) { that.mousedown(e); },
         mouseup: function(e) { that.mouseup(e); }
     });
+
+    $("#controls .button").mousedown(function(e) {
+        var el = $(this);
+        that.modifyRegion(el.parents("li").data("layer"), el.hasClass("plus") ? 10 : -10);
+        e.stopPropagation();
+    })
 };
 
 function GameState(game) {
     this.cameraElevation = 90;
     this.cameraAngle = 0;
     this.activeSlice = 0;
-    this.activeLayer = 0;
 }
 
 $.extend(Game.prototype, {
@@ -49,8 +54,8 @@ $.extend(Game.prototype, {
         this.gl.animate();
     },
 
-    modifyRegion: function(amount) {
-        this.world.modifyRegion(this.state.activeSlice, this.state.activeLayer, amount / 10);
+    modifyRegion: function(layer, amount) {
+        this.world.modifyRegion(this.state.activeSlice, layer, amount / 10);
     },
 
     selectRegion: function(x, y) {
