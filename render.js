@@ -3,13 +3,14 @@ var render = function() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     placeCamera();
-    game.shaders.dirt.draw(game.world.dirtLayer);
+    game.shaders.dirt.draw(game.world.dirtLayer.mesh, gl.LINES);
 };
 
-function placeCamera() {
+function placeCamera() { 
     gl.loadIdentity();
     gl.translate(0, 0, -400);
-    gl.rotate(85, 1, 0, 0);
+    gl.rotate(game.state.cameraElevation, 1, 0, 0); 
+    gl.rotate(game.state.cameraAngle, 0, 1, 0);  
 }
 
 var gl;
