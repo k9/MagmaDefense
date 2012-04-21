@@ -3,7 +3,8 @@ var render = function() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     placeCamera();
-    game.shaders.dirt.draw(game.world.dirtLayer.mesh, gl.LINES);
+    game.shaders.dirt.draw(game.world.dirtLayer.mesh);
+    game.shaders.magma.draw(game.world.magmaLayer.mesh);
 };
 
 function placeCamera() { 
