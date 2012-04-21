@@ -1,14 +1,14 @@
 function World(worldSlices) {
     this.magmaLayer = new WorldLayer(this, worldSlices, 10, 
-        function(i) { return 50 + Math.random() * 5; },
+        function(i) { return 50 + Math.random() * 0; },
         smoothInterp);
 
     this.rockLayer = new WorldLayer(this, worldSlices, 5, 
-        function(i) { return 75 + Math.random() * 5; },
+        function(i) { return 75 + Math.random() * 0; },
         smoothInterp);  
 
     this.dirtLayer = new WorldLayer(this, worldSlices, 0,
-        function(i) { return 95 + Math.random() * 10; }, 
+        function(i) { return 95 + Math.random() * 0; }, 
         smoothInterp);
 
     this.waterLayer = new WorldLayer(this, worldSlices, -5, 
@@ -18,15 +18,21 @@ function World(worldSlices) {
     this.selector = new GL.Mesh();
     var angle = Math.PI * 2 / worldSlices;
     var size = 200;
-    var x = Math.sin(angle/2) * 200;
-    var y = Math.cos(angle/2) * 200;
+    var x = Math.sin(angle) * 200;
+    var y = Math.cos(angle) * 200;
     this.selector.vertices.push([x, 20, y], [-x, 20, y], [0, 20, 0]);
     this.selector.triangles.push([0, 1, 2]);
     this.selector.compile();
 }
 
-function smoothInterp(from, to, pct) {
-    return mix(from, to, pct);
+function smoothInterp(before, from, to, after, pct) {
+    var beforeTarget = from + (from - before);
+    var afterTarget = to + (to - after);
+    var startMix = mix(from, beforeTarget, pct);
+    var endMix = mix(afterTarget, to, pct);
+    var weightedMix = mix(startMix, endMix, pct);
+
+    return clamp(weightedMix, Math.min(from, to), Math.max(from, to));
 }
 
 function WorldLayer(world, slices, z, heightFn, interpFn) {
@@ -42,25 +48,35 @@ function WorldLayer(world, slices, z, heightFn, interpFn) {
 $.extend(World.prototype, {
     modifyRegion: function(slice, layerName, amount) {
         var layer = this[layerName + "Layer"];
-        layer.radii[slice] += amount;
+        if(layerName == "water") {
+            for(var i = 0; i < layer.radii.length; i++)
+                layer.radii[i] += amount;
+        }
+        else {
+            layer.radii[slice] += amount;
+        }
+
         this.makeMesh(layer);
     },
 
     makeMesh: function(layer) {
         radiiCount = layer.radii.length;
-        smoothedRadii = [];
+        detailRadii = [];
         for(var i = 0; i < radiiCount; i++) {
+            var before = layer.radii[mod(i - 1, radiiCount)];
             var from = layer.radii[i];
-            var to = layer.radii[(i + 1) % radiiCount];
+            var to = layer.radii[mod(i + 1, radiiCount)];
+            var after = layer.radii[mod(i + 2, radiiCount)];
 
-            for(var j = 0; j < 4; j++)
-                smoothedRadii[i * 4 + j] = layer.interpFn(from, to, j / 4);
+            var detail = 8;
+            for(var j = 0; j < detail; j++)
+                detailRadii[i * detail + j] = layer.interpFn(before, from, to, after, j / detail);
         }
 
         layer.mesh = CSG.bumpyCylinder({
             start: [0, -5 + layer.z, 0],
             end: [0, 5 + layer.z, 0],
-            sliceArray: smoothedRadii
+            sliceArray: detailRadii
         }).toMesh();
 
         layer.mesh.compile();

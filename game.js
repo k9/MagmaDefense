@@ -4,7 +4,7 @@ window.Game = function() {
     this.gl.ondraw = render;
     this.gl.onupdate = bindFn(this.tick, this);
     this.shaders = new Shaders();
-    this.worldSlices = 15;
+    this.worldSlices = 12;
     this.world = new World(this.worldSlices);
     this.state = new GameState(this);
     this.selectRegion(0, 0);
@@ -46,8 +46,21 @@ $.extend(Game.prototype, {
     },
 
     mousedown: function(e) {
+        var el = $(e.target);
         this.dragging = true;
         this.dragStart = { x: e.pageX, y: e.pageY };
+
+        var center = { 
+            x: el.offset().left + el.width() / 2, 
+            y: el.offset().top + el.height() / 2 
+        };
+
+        var d = {
+            x: e.pageX - center.x,
+            y: e.pageY - center.y
+        };
+
+        console.log(mod(Math.atan2(d.y, d.x) / Math.PI * 180 + 90, 360)); 
     },
 
     mouseup: function(e) { this.dragging = false; },
@@ -79,7 +92,7 @@ $.extend(Game.prototype, {
         this.state.cameraAngle = this.state.activeSlice * (360 / this.worldSlices);
     },
 
-    tick: function() {
-
+    tick: function(seconds) {
+        seconds = clamp(seconds, 0.001, 0.1)
     }
 });

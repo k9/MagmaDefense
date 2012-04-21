@@ -10,6 +10,10 @@ function mod(x, y) {
     return ((x % y) + y) % y;
 }
 
+function clamp(x, min, max) {
+    return Math.min(Math.max(x, min), max);
+}
+
 function bindFn(fn, thisObject) {
     return function() { fn.apply(thisObject, arguments); };
 }
