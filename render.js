@@ -3,15 +3,19 @@ var render = function() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     placeCamera();
-    game.shaders.dirt.draw(game.world.dirtLayer.mesh);
-    game.shaders.magma.draw(game.world.magmaLayer.mesh);
+    gl.pushMatrix();
+    game.shaders.solid.uniforms({ color: [0.4, 0.4, 0.9] }).draw(game.world.waterLayer.mesh);
+    game.shaders.solid.uniforms({ color: [0.41, 0.25, 0.15] }).draw(game.world.dirtLayer.mesh);
+        game.shaders.solid.uniforms({ color: [0.7, 0.7, 0.7] }).draw(game.world.rockLayer.mesh);
+    game.shaders.solid.uniforms({ color: [1.0, 0.43, 0.26] }).draw(game.world.magmaLayer.mesh);
+    gl.popMatrix();
 };
 
 function placeCamera() { 
     gl.loadIdentity();
     gl.translate(0, 0, -400);
     gl.rotate(game.state.cameraElevation, 1, 0, 0); 
-    gl.rotate(game.state.cameraAngle, 0, 1, 0);  
+    gl.rotate(game.state.cameraAngle, 0, 1, 0);   
 }
 
 var gl;

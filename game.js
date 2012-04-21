@@ -4,7 +4,7 @@ window.Game = function() {
     this.gl.ondraw = render;
     this.gl.onupdate = bindFn(this.tick, this);
     this.shaders = new Shaders();
-    this.worldSlices = 30;
+    this.worldSlices = 4;
     this.world = new World(this.worldSlices);
     this.state = new GameState(this);
     this.selectRegion(0, 0);
@@ -21,7 +21,7 @@ window.Game = function() {
 };
 
 function GameState(game) {
-    this.cameraElevation = 125;
+    this.cameraElevation = 90;
     this.cameraAngle = 0;
     this.activeSlice = 0;
     this.activeLayer = 0;

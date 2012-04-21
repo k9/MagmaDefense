@@ -1,17 +1,25 @@
 function World(worldSlices) {
-    this.magmaLayer = new WorldLayer(this, worldSlices, 5, function(i) { 
+    this.magmaLayer = new WorldLayer(this, worldSlices, 10, function(i) { 
         return 50 + Math.random() * 5; 
+    });
+
+    this.rockLayer = new WorldLayer(this, worldSlices, 5, function(i) { 
+        return 75 + Math.random() * 5; 
     });  
 
     this.dirtLayer = new WorldLayer(this, worldSlices, 0, function(i) { 
-        return 100 + Math.random() * 1; 
-    }); 
+        return 100; 
+    });
+
+    this.waterLayer = new WorldLayer(this, worldSlices, -5, function(i) { 
+        return 100; 
+    });  
 }
 
 function WorldLayer(world, slices, z, heightFn) {
     this.z = z;
-    this.radii = new Array(slices);
-    for(var i = 0; i < this.radii.length; i++)
+    this.radii = [];
+    for(var i = 0; i < slices; i++)
         this.radii[i] = heightFn(i);
 
     world.makeMesh(this);
@@ -24,10 +32,17 @@ $.extend(World.prototype, {
     },
 
     makeMesh: function(layer) {
+        radiiCount = layer.radii.length;
+        smoothedRadii = [];
+        for(var i = 0; i < radiiCount; i++) {
+            var current = layer.radii[i];
+            smoothedRadii[i] = current;
+        }
+
         layer.mesh = CSG.bumpyCylinder({
             start: [0, -5 + layer.z, 0],
             end: [0, 5 + layer.z, 0],
-            sliceArray: layer.radii
+            sliceArray: smoothedRadii
         }).toMesh();
 
         layer.mesh.compile();
