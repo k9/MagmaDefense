@@ -4,7 +4,7 @@ window.Game = function() {
     this.gl.ondraw = render;
     this.gl.onupdate = bindFn(this.tick, this);
     this.shaders = new Shaders();
-    this.worldSlices = 4;
+    this.worldSlices = 15;
     this.world = new World(this.worldSlices);
     this.state = new GameState(this);
     this.selectRegion(0, 0);
@@ -30,10 +30,7 @@ function GameState(game) {
 $.extend(Game.prototype, {
     mousemove: function(e) {
         if(!this.lastPos) this.lastPos = { x: e.pageX, y: e.pageY };
-
-        if(!this.dragging) this.selectRegion(e.pageX, e.pageY);
-        else this.modifyRegion(this.lastPos.y - e.pageY);
-
+        if(this.dragging) this.selectRegion(e.pageX, e.pageY);
         this.lastPos = { x: e.pageX, y: e.pageY };
     },
 
@@ -57,7 +54,7 @@ $.extend(Game.prototype, {
     },
 
     selectRegion: function(x, y) {
-        this.state.activeSlice = Math.floor(x / 20) % this.worldSlices;
+        this.state.activeSlice = Math.floor(x / 50) % this.worldSlices;
         this.state.cameraAngle = 180 + this.state.activeSlice * (360 / this.worldSlices);
     },
 

@@ -1,23 +1,28 @@
 function World(worldSlices) {
-    this.magmaLayer = new WorldLayer(this, worldSlices, 10, function(i) { 
-        return 50 + Math.random() * 5; 
-    });
+    this.magmaLayer = new WorldLayer(this, worldSlices, 10, 
+        function(i) { return 50 + Math.random() * 5; },
+        smoothInterp);
 
-    this.rockLayer = new WorldLayer(this, worldSlices, 5, function(i) { 
-        return 75 + Math.random() * 5; 
-    });  
+    this.rockLayer = new WorldLayer(this, worldSlices, 5, 
+        function(i) { return 75 + Math.random() * 5; },
+        smoothInterp);  
 
-    this.dirtLayer = new WorldLayer(this, worldSlices, 0, function(i) { 
-        return 100; 
-    });
+    this.dirtLayer = new WorldLayer(this, worldSlices, 0,
+        function(i) { return 100; }, 
+        smoothInterp);
 
-    this.waterLayer = new WorldLayer(this, worldSlices, -5, function(i) { 
-        return 100; 
-    });  
+    this.waterLayer = new WorldLayer(this, worldSlices, -5, 
+        function(i) { return 100; },
+        smoothInterp);  
 }
 
-function WorldLayer(world, slices, z, heightFn) {
+function smoothInterp(from, to, pct) {
+    return mix(from, to, pct);
+}
+
+function WorldLayer(world, slices, z, heightFn, interpFn) {
     this.z = z;
+    this.interpFn = interpFn;
     this.radii = [];
     for(var i = 0; i < slices; i++)
         this.radii[i] = heightFn(i);
@@ -35,8 +40,11 @@ $.extend(World.prototype, {
         radiiCount = layer.radii.length;
         smoothedRadii = [];
         for(var i = 0; i < radiiCount; i++) {
-            var current = layer.radii[i];
-            smoothedRadii[i] = current;
+            var from = layer.radii[i];
+            var to = layer.radii[(i + 1) % radiiCount];
+
+            for(var j = 0; j < 4; j++)
+                smoothedRadii[i * 4 + j] = layer.interpFn(from, to, j / 4);
         }
 
         layer.mesh = CSG.bumpyCylinder({

@@ -1,4 +1,9 @@
 * { margin: 0; padding: 0 }
-body { font-family: helvetica; background: #444; color: #eee; font-size: 14px; margin-top: 50px }
-h1 { font-size: 35px; letter-spacing: -1px; text-align: center; margin-bottom: 5px }
-#gameContainer { position: relative; width: 600px; height: 600px; margin: 0 auto }
+ul { list-style: none }
+body { font-family: helvetica; background: #444; color: #444; font-size: 14px; margin-top: 50px }
+h1 { font-size: 35px; letter-spacing: -1px; text-align: center; margin-bottom: 5px; color: #eee }
+#gameContainer { position: relative; width: 960px; height: 600px; margin: 0 auto }
+#controls { position: absolute; bottom: 0; left: 0; right: 0; height: 150px; background: white }
+#controls>li { display: inline-block; margin-left: 3%; width: 21%; font-weight: bold }
+#controls>li p { text-align: center; padding: 10px 10px 0 10px }
+#controls>li li { text-align: center; width: 50px; padding: 5px; margin: 0 auto; }
