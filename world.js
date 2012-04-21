@@ -14,6 +14,15 @@ function World(worldSlices) {
     this.waterLayer = new WorldLayer(this, worldSlices, -5, 
         function(i) { return 100; },
         smoothInterp);  
+
+    this.selector = new GL.Mesh();
+    var angle = Math.PI * 2 / worldSlices;
+    var size = 200;
+    var x = Math.sin(angle/2) * 200;
+    var y = Math.cos(angle/2) * 200;
+    this.selector.vertices.push([x, 20, y], [-x, 20, y], [0, 20, 0]);
+    this.selector.triangles.push([0, 1, 2]);
+    this.selector.compile();
 }
 
 function smoothInterp(from, to, pct) {

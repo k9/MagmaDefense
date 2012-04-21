@@ -10,20 +10,24 @@ window.Game = function() {
     this.selectRegion(0, 0);
     this.dragging = false;
     this.dragStart = { x: 0, y: 0 };
-    this.lastPos = null;
 
     var that = this;
-    $("#gameContainer").on({
+    $(this.gl.canvas).on({
         mousemove: function(e) { that.mousemove(e); },
-        mousedown: function(e) { that.mousedown(e); },
-        mouseup: function(e) { that.mouseup(e); }
+        mousedown: function(e) { that.mousedown(e); }
     });
 
-    $("#controls .button").mousedown(function(e) {
-        var el = $(this);
-        that.modifyRegion(el.parents("li").data("layer"), el.hasClass("plus") ? 10 : -10);
-        e.stopPropagation();
-    })
+    $(document).on({
+        mouseup: function(e) { 
+            that.mouseup(e); 
+            that.buttonup(e); 
+        }
+    });
+
+    this.buttonTimer = null;
+    $("#controls .button").on({
+        mousedown: function(e) { that.buttondown(e); }
+    });
 };
 
 function GameState(game) {
@@ -34,19 +38,31 @@ function GameState(game) {
 
 $.extend(Game.prototype, {
     mousemove: function(e) {
-        if(!this.lastPos) this.lastPos = { x: e.pageX, y: e.pageY };
-        if(this.dragging) this.selectRegion(e.pageX, e.pageY);
-        this.lastPos = { x: e.pageX, y: e.pageY };
+        if(this.dragging && Math.abs(this.dragStart.x - e.pageX) > 20) {
+            var moveBy = (this.dragStart.x - e.pageX) > 0 ? 1 : -1;
+            this.selectRegion(this.state.activeSlice + moveBy);
+            this.dragStart = { x: e.pageX, y: e.pageY };
+        }
     },
 
-    mousedown: function(e) { 
-        var offset = $(this.gl.canvas).offset();
-        this.dragging = true; 
-        this.dragStart.x = e.pageX - offset.left;
-        this.dragStart.y = e.pageY - offset.top;
+    mousedown: function(e) {
+        this.dragging = true;
+        this.dragStart = { x: e.pageX, y: e.pageY };
     },
 
     mouseup: function(e) { this.dragging = false; },
+
+    buttondown: function(e) {
+        var el = $(e.target);
+        var layerName = el.parents("li").data("layer");
+        var amount = el.hasClass("plus") ? 10 : -10;
+        var that = this;
+        this.modifyRegion(layerName, amount);
+        this.buttonTimer = setInterval(
+            function() { that.modifyRegion(layerName, amount); }, 100);
+    },
+    
+    buttonup: function(e) { clearInterval(this.buttonTimer); },
 
     start: function() {
         $("#gameContainer").append(this.gl.canvas);
@@ -58,9 +74,9 @@ $.extend(Game.prototype, {
         this.world.modifyRegion(this.state.activeSlice, layer, amount / 10);
     },
 
-    selectRegion: function(x, y) {
-        this.state.activeSlice = Math.floor(x / 50) % this.worldSlices;
-        this.state.cameraAngle = 180 + this.state.activeSlice * (360 / this.worldSlices);
+    selectRegion: function(newSlice) {
+        this.state.activeSlice = mod(newSlice, this.worldSlices);
+        this.state.cameraAngle = this.state.activeSlice * (360 / this.worldSlices);
     },
 
     tick: function() {

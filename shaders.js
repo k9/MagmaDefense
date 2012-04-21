@@ -4,9 +4,9 @@ function Shaders() {
             gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\
         }\
         ', '\
-        uniform vec3 color;\
+        uniform vec4 color;\
         void main() {\
-            gl_FragColor = vec4(color, 1.0);\
+            gl_FragColor = color;\
         }\
     ');
 }
