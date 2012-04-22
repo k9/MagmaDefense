@@ -3,8 +3,11 @@ function Shaders() {
         uniform float seconds;\
         uniform float scale;\
         uniform float pulse;\
+        uniform float wave;\
         void main() {\
-            vec3 pos = gl_Vertex.xyz * (scale + pulse * sin(seconds * 3.0));\
+            float totalScale = scale + pulse * sin(seconds * 3.0);\
+            totalScale += wave * sin(seconds * 3.0 + gl_Vertex.x + gl_Vertex.z);\
+            vec3 pos = gl_Vertex.xyz * totalScale;\
             gl_Position = gl_ModelViewProjectionMatrix * vec4(pos, 1.0);\
         }\
         ', '\

@@ -24,8 +24,8 @@ CSG.bumpyCylinder = function(options) {
     var t0 = i / slices, t1 = (i + 1) / slices;
     var r0 = sliceArray[i];
     var r1 = sliceArray[(i + 1) % slices];
-    polygons.push(new CSG.Polygon([start, point(0, t0, -1, r0), point(0, t1, -1, r1)]));
-    polygons.push(new CSG.Polygon([point(0, t1, 0, r1), point(0, t0, 0, r0), point(1, t0, 0, r0), point(1, t1, 0, r1)]));
+    /*polygons.push(new CSG.Polygon([start, point(0, t0, -1, r0), point(0, t1, -1, r1)]));
+    polygons.push(new CSG.Polygon([point(0, t1, 0, r1), point(0, t0, 0, r0), point(1, t0, 0, r0), point(1, t1, 0, r1)]));*/
     polygons.push(new CSG.Polygon([end, point(1, t1, 1, r1), point(1, t0, 1, r0)]));
   }
   return CSG.fromPolygons(polygons);

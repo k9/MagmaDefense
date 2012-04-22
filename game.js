@@ -4,7 +4,7 @@ window.Game = function() {
     this.gl.ondraw = render;
     this.gl.onupdate = bindFn(this.tick, this);
     this.shaders = new Shaders();
-    this.worldSlices = 12;
+    this.worldSlices = 20;
     this.world = new World(this.worldSlices);
     this.state = new GameState(this);
     this.selectRegion(0, 0);
@@ -67,17 +67,20 @@ $.extend(Game.prototype, {
         var amount = el.hasClass("plus") ? 10 : -10;
         var that = this;
         this.modifyRegion(layerName, amount);
+        clearInterval(this.buttonTimer);
         this.buttonTimer = setInterval(
             function() { that.modifyRegion(layerName, amount); }, 50);
     },
     
-    buttonup: function(e) { clearInterval(this.buttonTimer); },
+    buttonup: function(e) { 
+        clearInterval(this.buttonTimer); 
+    },
 
     angleFromCenter: function(x, y) {
         var el = $(this.gl.canvas);
         var center = { 
             x: el.offset().left + el.width() / 2, 
-            y: el.offset().top + el.height() / 2 
+            y: el.offset().top + el.height() / 2
         };
 
         var d = {
@@ -96,14 +99,31 @@ $.extend(Game.prototype, {
 
     modifyRegion: function(layer, amount) {
         this.world.modifyRegion(layer, this.state.activeSlice, amount / 10);
+        this.updateControls();
     },
 
     selectRegion: function(newSlice) {
         this.state.activeSlice = mod(newSlice, this.worldSlices);
-        this.state.cameraAngle = this.state.activeSlice * (360 / this.worldSlices);
+        this.updateControls();
+    },
+
+    updateControls: function() {
+        var that = this;
+        $("#controls .button").each(function() {
+            var el = $(this);
+            var layerName = el.parents("li").data("layer");
+
+            var test = el.hasClass("plus") ? "isMax" : "isMin";
+            el.toggleClass("disabled", that.world[test](layerName, that.state.activeSlice));
+        });
     },
 
     tick: function(seconds) {
         seconds = clamp(seconds, 0.001, 0.1)
+
+        var newAngle = this.state.activeSlice * (360 / this.worldSlices);
+        if(newAngle - this.state.cameraAngle > 180) newAngle -= 360;
+        if(newAngle - this.state.cameraAngle < -180) newAngle += 360;
+        this.state.cameraAngle = mix(this.state.cameraAngle, newAngle, clamp(seconds * 30, 0, 1));
     }
 });

@@ -10,15 +10,17 @@ var render = function() {
     gl.pushMatrix();
     gl.rotate(game.state.cameraAngle, 0, 1, 0);
     var sh = game.shaders;
-    sh.solid.uniforms({ scale: 1, pulse: 0, seconds: seconds });
+    sh.solid.uniforms({ scale: 1, pulse: 0, wave: 0, seconds: seconds });
     sh.solid.uniforms({ color: [0.41, 0.25, 0.15, 1.0] }).draw(game.world.dirtLayer.mesh);
     sh.solid.uniforms({ color: [0.5, 0.5, 0.5, 1.0] }).draw(game.world.rockLayer.mesh);
+    sh.solid.uniforms({ wave: 0.005, color: [0.43, 0.57, 0.82, 1.0] }).draw(game.world.waterLayer.mesh);
 
     toggleAlpha(true);
-    sh.solid.uniforms({ pulse: 0., scale: 1, color: [1.0, 0.43, 0.26, 0.6] }).draw(game.world.magmaLayer.mesh);
-    sh.solid.uniforms({ pulse: 0.002, scale: 1.05, color: [1.0, 0.43, 0.26, 0.1] }).draw(game.world.magmaLayer.mesh);
-    sh.solid.uniforms({ pulse: 0.004, scale: 1.1, color: [1.0, 0.43, 0.26, 0.1] }).draw(game.world.magmaLayer.mesh);
-    sh.solid.uniforms({ pulse: 0.008, scale: 1.15, color: [1.0, 0.43, 0.26, 0.1] }).draw(game.world.magmaLayer.mesh);
+    sh.solid.uniforms({ wave: 0 });
+    sh.solid.uniforms({ pulse: 0, scale: 1, color: [1.0, 0.43, 0.26, 0.6] }).draw(game.world.magmaLayer.mesh);
+    sh.solid.uniforms({ pulse: 0.002, scale: 1.025, color: [1.0, 0.43, 0.26, 0.1] }).draw(game.world.magmaLayer.mesh);
+    sh.solid.uniforms({ pulse: 0.004, scale: 1.05, color: [1.0, 0.43, 0.26, 0.1] }).draw(game.world.magmaLayer.mesh);
+    sh.solid.uniforms({ pulse: 0.008, scale: 1.075, color: [1.0, 0.43, 0.26, 0.1] }).draw(game.world.magmaLayer.mesh);
 
     gl.popMatrix();
 
@@ -29,8 +31,8 @@ var render = function() {
 
 function placeCamera() { 
     gl.loadIdentity();
-    gl.translate(0, 0, -300);
-    gl.rotate(game.state.cameraElevation, 1, 0, 0);  
+    gl.translate(0, -0, -400);
+    gl.rotate(game.state.cameraElevation, 1, 0, 0);
 }
 
 function toggleAlpha(on) {
