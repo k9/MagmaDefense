@@ -34,19 +34,27 @@ $.extend(WorldLayer.prototype, {
         this.mesh.compile();
     },
 
+    modifyAll: function(amount) {
+        for(var i = 0; i < this.radii.length; i++)
+            this.modifyRegion(i, amount);
+    },
+
     modifyRegion: function(slice, amount) {
         var newRadius = clamp(this.radii[slice] + amount, this.minHeight, this.maxHeight);
+        if(newRadius < 5) newRadius = 0;
         var changed = (newRadius != this.radii[slice]);
         this.radii[slice] = newRadius;
         return changed;
     },
 
     modifyRegions: function(slice, amount) {
-        this.modifyRegion(mod(slice - 2, this.slices), amount * 0.25);
-        this.modifyRegion(mod(slice - 1, this.slices), amount * 0.5);
+        this.modifyRegion(mod(slice - 2, this.radii.length), amount * 0.1);
+        this.modifyRegion(mod(slice - 1, this.radii.length), amount * 0.5);
+        this.modifyRegion(mod(slice + 1, this.radii.length), amount * 0.8);
         this.modifyRegion(slice, amount);
-        this.modifyRegion(mod(slice + 1, this.slices), amount * 0.5);
-        this.modifyRegion(mod(slice + 2, this.slices), amount * 0.25);
+        this.modifyRegion(mod(slice + 1, this.radii.length), amount * 0.8);
+        this.modifyRegion(mod(slice + 2, this.radii.length), amount * 0.5);
+        this.modifyRegion(mod(slice + 3, this.radii.length), amount * 0.1);
     },
 
     erode: function() {

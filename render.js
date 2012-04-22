@@ -24,7 +24,7 @@ var render = function() {
     gl.popMatrix();
 
     gl.rotate(game.state.cameraAngle, 0, 1, 0);
-    //solid.uniforms({ scale: 1.0, wave: 0.0033, color: [0.43, 0.57, 0.82, 0.33] }).draw(game.world.water.mesh);
+    solid.uniforms({ scale: 1.0, wave: 0.0033, color: [0.43, 0.57, 0.82, 0.33] }).draw(game.world.water.mesh);
 
     solid.uniforms({ wave: 0.0 });
     solid.uniforms({ scale: 1.0, color: [0.41, 0.30, 0.25, 1.0] }).draw(game.world.dirt.mesh);
@@ -52,15 +52,16 @@ var render = function() {
         var missileColors = {
             dirt: [0.41, 0.30, 0.25, 1.0],
             rock: [0.5, 0.5, 0.5, 1.0],
-            magma: [1.0, 0.43, 0.26, 0.6] 
+            magma: [1.0, 0.43, 0.26, 1.0],
+            fusion: [1.0, 1.0, 0.2, 1.0]
         }
 
-        solid.uniforms({ scale: 1.0, pulse: 0, wave: 0, color: [0.8, 0.8, 0.8, 1.0] }).draw(game.missile.mesh);
+        solid.uniforms({ scale: 1.0, pulse: 0, wave: 0, color: [0.7, 0.7, 0.7, 1.0] }).draw(game.missile.mesh);
         solid.uniforms({ scale: 1.0, pulse: 0, wave: 0, color: missileColors[game.missile.type] }).draw(game.missile.stripe);
     }
     gl.popMatrix();
 
-    solid.uniforms({ scale: 1.0, color: [1.0, 1.0, 1.0, 0.2] }).draw(game.world.selector);
+    //solid.uniforms({ scale: 1.0, color: [1.0, 1.0, 1.0, 0.2] }).draw(game.world.selector);
     gl.popMatrix();
 };
 

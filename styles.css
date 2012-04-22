@@ -3,15 +3,13 @@ ul { list-style: none }
 body { font-family: helvetica; background: #444; color: #444; font-size: 14px; margin-top: 50px }
 h1 { font-size: 35px; letter-spacing: -1px; text-align: center; margin-bottom: 5px; color: #eee }
 #gameContainer { position: relative; width: 960px; height: 600px; margin: 0 auto; box-shadow: 0 0px 13px 0 #888 }
-#controls { position: absolute; top: 180px; bottom: 100px; left: 10px; width: 200px }
-#controls>.button { margin-top: 10px; font-weight: bold; border: 1px solid #aaa; border-radius: 5px; box-shadow: 0 1px 3px 0 #888; position: relative; -moz-user-select: none; -webkit-user-select: none;  }
-#controls>.button span {display: inline-block; font-size: 25px; padding: 6px 12px; cursor: pointer; text-transform: capitalize; text-align: left; letter-spacing: -1px; color: #eee; vertical-align: middle; width: 50px }
+#controls { position: absolute; height: 80px; bottom: 0; left: 200px; right: 0 }
+#controls>.button { display: inline-block; margin-right: 10px; font-weight: bold; border: 1px solid #aaa; border-radius: 5px; box-shadow: 0 1px 3px 0 #888; position: relative; -moz-user-select: none; -webkit-user-select: none }
+#controls>.button span {display: inline-block; font-size: 18px; padding: 6px 12px; cursor: pointer; text-transform: capitalize; text-align: left; letter-spacing: -1px; color: #eee; vertical-align: middle; width: 100px }
 #controls>.button:hover { background: #fff; box-shadow: 0 2px 3px 0 inset #000 }
 #controls>.button:active { background: #fff; box-shadow: none }
 #controls>.button.disabled { background: #ddd; color: #bbb; box-shadow: none }
-#controls>.button .key { color: #ccc; width: 32px; padding: 10px 14px; font-style: italic; text-align: right }
-#controls>.button .count { display: inline-block; color: #f8f8f8; font-size: 36px; width: 30px; text-align: right; border-radius: 4px 0 0 4px; background: #f4f4f4 } 
-
+#controls>.button .count { display: inline-block; color: #f8f8f8; font-size: 36px; width: 30px; text-align: center; border-radius: 4px 0 0 4px; background: #f4f4f4 } 
 #controls>.dirt .count { color: rgb(105, 77, 64) }
 #controls>.rock .count { color: rgb(90, 90, 90) }
 #controls>.magma .count { color: rgb(255, 100, 64) }

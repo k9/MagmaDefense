@@ -1,15 +1,15 @@
 function World(slices) {
     this.slices = slices;
 
-    this.magma = new WorldLayer(this, slices, 10, 0, 60,
-        function(i) { return 50 + Math.random() * 5; },
+    this.magma = new WorldLayer(this, slices, 10, 0, 65,
+        function(i) { return 35 + Math.random() * 5; },
         smoothInterp);
 
-    this.rock = new WorldLayer(this, slices, 5, 0, 50,
+    this.rock = new WorldLayer(this, slices, 5, 0, 75,
         function(i) { return 30 + Math.random() * 10; },
         bumpyInterp);  
 
-    this.dirt = new WorldLayer(this, slices, 0, 0, 30,
+    this.dirt = new WorldLayer(this, slices, 0, 0, 50,
         function(i) { return 15 + Math.random() * 10; }, 
         bumpyInterp); 
 
@@ -19,10 +19,7 @@ function World(slices) {
 
     this.makeMeshes();
 
-    this.skyMesh = CSG.sphere({
-        radius: 500
-    }).toMesh();
-
+    this.skyMesh = CSG.sphere({ radius: 500 }).toMesh();
     this.skyMesh.compile();
 
     this.selector = new GL.Mesh();
@@ -43,7 +40,7 @@ $.extend(World.prototype, {
     makeMeshes: function() {
         var dirtMin = 1000000;
         for(var i = 0; i < this.slices; i++) {
-            this.magma.totalRadii[i] = this.magma.radii[i];
+            this.magma.totalRadii[i] = this.magma.radii[i] + this.gold.height;
             this.rock.totalRadii[i] = this.rock.radii[i] + this.magma.totalRadii[i];
             this.dirt.totalRadii[i] = this.dirt.radii[i] + this.rock.totalRadii[i];
             dirtMin = Math.min(dirtMin, this.dirt.totalRadii[i]);
