@@ -41,6 +41,26 @@ $.extend(WorldLayer.prototype, {
         return changed;
     },
 
+    modifyRegions: function(slice, amount) {
+        this.modifyRegion(mod(slice - 2, this.slices), amount * 0.25);
+        this.modifyRegion(mod(slice - 1, this.slices), amount * 0.5);
+        this.modifyRegion(slice, amount);
+        this.modifyRegion(mod(slice + 1, this.slices), amount * 0.5);
+        this.modifyRegion(mod(slice + 2, this.slices), amount * 0.25);
+    },
+
+    erode: function() {
+        var total = 0;
+        for(var i = 0; i < this.radii.length; i++)
+            total += this.radii[i];
+
+        var avg = total / this.radii.length;
+
+        for(var i = 0; i < this.radii.length; i++)
+            this.radii[i] = mix(this.radii[i], avg, 0.1);       
+    },
+
+    totalSliceHeight: function(slice) { return this.totalRadii[slice]; },
     sliceHeight: function(slice) { return this.radii[slice]; }
 });
 
@@ -73,6 +93,7 @@ $.extend(WaterLayer.prototype, {
         return changed;
     },
 
+    totalSliceHeight: function(slice) { return this.startAt + this.height; },
     sliceHeight: function(slice) { return this.height; }
 });
 
@@ -83,9 +104,9 @@ function smoothInterp(before, from, to, after, pct) {
     var target = mix(beforeTarget, afterTarget, pct);
     var weighted = mix(target, linear, Math.abs(pct - 0.5) * 2);
 
-    return mix(linear, weighted, 0.75);
+    return clamp(weighted, Math.min(from, to), Math.max(from, to));
 }
 
 function bumpyInterp(before, from, to, after, pct) {
-    return smoothInterp(before, from, to, after, pct) + Math.random() * 0;
+    return smoothInterp(before, from, to, after, pct) + Math.sin(before * from * to * after * pct) * 0.5;
 }

@@ -4,12 +4,18 @@ window.Game = function() {
     this.gl.ondraw = render;
     this.gl.onupdate = bindFn(this.tick, this);
     this.shaders = new Shaders();
-    this.worldSlices = 20;
+    this.worldSlices = 15;
     this.world = new World(this.worldSlices);
+    this.missile = new Missile(this.world);
+    this.countDown = 1;
+    this.countDownSpeed = 1;
     this.state = new GameState(this);
     this.selectRegion(0, 0);
     this.dragging = false;
     this.dragStart = { x: 0, y: 0 };
+    this.secondsElapsed = 0;   
+    this.elapsed = 0;
+    this.frames = 0;
 
     var that = this;
     $(this.gl.canvas).on({
@@ -21,7 +27,9 @@ window.Game = function() {
         mouseup: function(e) { 
             that.mouseup(e); 
             that.buttonup(e); 
-        }
+        },
+        keydown: function(e) { that.keyChange(e.keyCode, true); },
+        keyup: function(e) { that.keyChange(e.keyCode, false); }
     });
 
     this.buttonTimer = null;
@@ -64,16 +72,21 @@ $.extend(Game.prototype, {
     buttondown: function(e) {
         var el = $(e.target);
         var layerName = el.parents("li").data("layer");
-        var amount = el.hasClass("plus") ? 10 : -10;
-        var that = this;
-        this.modifyRegion(layerName, amount);
-        clearInterval(this.buttonTimer);
-        this.buttonTimer = setInterval(
-            function() { that.modifyRegion(layerName, amount); }, 50);
+        this.world.modifyRegion(layerName, this.state.activeSlice, 3);
+        updateControls();
     },
     
-    buttonup: function(e) { 
-        clearInterval(this.buttonTimer); 
+    buttonup: function(e) {},
+
+    //left = 37, right = 39
+    keyChange: function(code, pressed) {
+        if(pressed) {
+            if(code == 39) this.selectRegion(this.state.activeSlice - 1); 
+            if(code == 37) this.selectRegion(this.state.activeSlice + 1);
+            if(code == 65) this.world["dirt"].modifyRegions(this.state.activeSlice, 10);
+            if(code == 83) this.world["rock"].modifyRegions(this.state.activeSlice, 10);
+            if(code == 68) this.world["magma"].modifyRegions(this.state.activeSlice, 10);
+        }
     },
 
     angleFromCenter: function(x, y) {
@@ -97,13 +110,9 @@ $.extend(Game.prototype, {
         this.gl.animate();
     },
 
-    modifyRegion: function(layer, amount) {
-        this.world.modifyRegion(layer, this.state.activeSlice, amount / 10);
-        this.updateControls();
-    },
-
     selectRegion: function(newSlice) {
         this.state.activeSlice = mod(newSlice, this.worldSlices);
+        if(this.missile.active && !this.missile.hit) this.missile.slice = this.state.activeSlice;
         this.updateControls();
     },
 
@@ -112,18 +121,35 @@ $.extend(Game.prototype, {
         $("#controls .button").each(function() {
             var el = $(this);
             var layerName = el.parents("li").data("layer");
-
-            var test = el.hasClass("plus") ? "isMax" : "isMin";
-            el.toggleClass("disabled", that.world[test](layerName, that.state.activeSlice));
+            el.find(".count").text(6);
         });
     },
 
     tick: function(seconds) {
-        seconds = clamp(seconds, 0.001, 0.1)
+        seconds = clamp(seconds, 0.001, 0.1);
+        this.elapsed += seconds;
+        this.frames++;
+        if(Math.floor(this.elapsed) > this.secondsElapsed) {
+            console.log(this.frames);
+            this.frames = 0;
+            this.secondsElapsed = Math.floor(this.elapsed);
+        }
 
         var newAngle = this.state.activeSlice * (360 / this.worldSlices);
-        if(newAngle - this.state.cameraAngle > 180) newAngle -= 360;
-        if(newAngle - this.state.cameraAngle < -180) newAngle += 360;
-        this.state.cameraAngle = mix(this.state.cameraAngle, newAngle, clamp(seconds * 30, 0, 1));
+        var oldAngle = this.state.cameraAngle;
+        if(oldAngle - newAngle > 180) oldAngle -= 360;
+        if(newAngle - oldAngle > 180) oldAngle += 360;
+        this.state.cameraAngle = newAngle; mix(oldAngle, newAngle, clamp(seconds * 10, 0, 1));
+
+        if(game.missile.active)
+            this.missile.update(seconds);
+        else if(game.countDown > 0) {
+            game.countDown -= seconds * this.countDownSpeed;
+            if(game.countDown < 0) {
+                var next = ["dirt", "rock", "magma"][Math.floor(Math.random() * 3)];
+                this.missile.start(this.state.activeSlice, next);
+                game.countDown = 1;
+            }
+        }
     }
 });
