@@ -6,9 +6,11 @@ window.Game = function() {
 
     this.currentLevel = 0;
     this.levels = [
-        { missiles: 3, speed: 120 },
-        { missiles: 5, speed: 150 },
-        { missiles: 7, speed: 200 }
+        { missiles: 15, speed: 100 },
+        { missiles: 30, speed: 125 },
+        { missiles: 45, speed: 150 },
+        { missiles: 60, speed: 150 },
+        { missiles: 60, speed: 175 }
     ];
 
     var that = this;
@@ -88,7 +90,7 @@ $.extend(Game.prototype, {
 
         var that = this;
         $(".level.screen").find("h2").text("Level " + (1 + this.currentLevel)).end()
-            .show().click(function() {
+            .fadeIn(2000).click(function() {
             $(this).hide();
 
             that.gl.ondraw = render;
@@ -97,7 +99,7 @@ $.extend(Game.prototype, {
     },
 
     finish: function() {
-        $(".finish.screen").show();
+        $(".finish.screen").fadeIn(2000);
     },
 
     lose: function() {
@@ -130,7 +132,8 @@ $.extend(Game.prototype, {
 
             el.css("opacity", [0.1, 0.2, 0.3, 1.0][that.state.credits[layerName]]);
         });
-        $("#counter .count").text(this.missiles);
+        
+        $("#counter .count").text(this.missiles > -1 ? this.missiles : 0);
     },
 
     tick: function(seconds) {

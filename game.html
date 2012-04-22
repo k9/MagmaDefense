@@ -6,9 +6,9 @@
 <link rel="stylesheet" type="text/css" href="styles.css">
 <script type="text/javascript" src="lib/jquery.min.js"></script>
 <script type="text/javascript" src="lib/csg.js"></script>
-<script type="text/javascript" src="bumpyCylinder.js"></script>
 <script type="text/javascript" src="lib/viewer.js"></script>
 <script type="text/javascript" src="lib/lightgl.js"></script>
+<script type="text/javascript" src="bumpyCylinder.js"></script>
 <script type="text/javascript" src="lib/audioStream.js"></script>
 <script type="text/javascript" src="lib/synth.js"></script>
 <script type="text/javascript" src="utils.js"></script>
@@ -22,7 +22,10 @@
 <body>
 <div id="gameContainer">
 <ul id="counter">
-    <span class='count'></span><span>Missiles Left</span>   
+<li class="button">
+    <span class='count'></span>
+    <span>Missiles Left</span>
+</li> 
 </ul>
 <ul id="controls">
 <li data-layer='dirt' class='dirt button' style="background: rgb(105, 77, 64)">
@@ -43,11 +46,17 @@
 </li>
 </ul>
 
-<div class="tutorial screen"><h2>Tutorial</h2><h3>Click to continue</h3></div>
+<div class="tutorial screen">
+    <h2>Instructions</h2>
+    <h3>Click to continue</h3>
+
+    <p>You must defend the gold core of your world from a barrage of missiles. Use the <strong>left</strong> and <strong>right arrow keys</strong> to spin the world.</p> <p>Each missile's color matches the terrain type it will do the most damage to, so spin vulnerable regions out of the way. Yellow missiles do serious damage to all terrain types.</p> <p>Missiles that hit water will slow down and do less damage. As you successfully guide missiles to the appropriate terrain, you'll see bonuses light up below. When these are fully lit they can be used with the <strong>A</strong>, <strong>S</strong>, <strong>D</strong>, and <strong>F</strong> keys.</p> <p><strong><em>Good luck.</em></strong></p>
+</div>
 <div class="level screen"><h2>Level 1</h2><h3>Click to continue</h3></div>
 <div class="tryAgain screen"><h2>Try Again</h2><h3>Click to continue</h3></div>
 <div class="finish screen"><h2>Victory is Yours</h2></div>
 <div class="focus screen"><h2>Click Here to Play</h2><h3>Click to continue</h3></div>
+</div>
 <script>
 window.game = new Game();
 $(".tutorial.screen").show().click(function() {

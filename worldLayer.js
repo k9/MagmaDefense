@@ -30,8 +30,6 @@ $.extend(WorldLayer.prototype, {
             end: [0, 5 + this.z, 0],
             sliceArray: detailRadii
         }).toMesh();
-
-        this.mesh.compile();
     },
 
     modifyAll: function(amount, rnd) {
