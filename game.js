@@ -38,29 +38,25 @@ function GameState(game) {
 
 $.extend(Game.prototype, {
     mousemove: function(e) {
-        if(this.dragging && Math.abs(this.dragStart.x - e.pageX) > 20) {
-            var moveBy = (this.dragStart.x - e.pageX) > 0 ? 1 : -1;
+        if(!this.dragging) return;
+        var newAngle = this.angleFromCenter(e.pageX, e.pageY);
+        var angle = newAngle - this.dragStartAngle;
+        if(angle > 180) angle -= 360;
+        if(angle < -180) angle += 360;
+        var moveBy = -angle / (360 / this.worldSlices);
+        moveBy = moveBy > 0 ? Math.floor(moveBy) : Math.ceil(moveBy);
+        if(this.dragging && moveBy != 0) {
             this.selectRegion(this.state.activeSlice + moveBy);
             this.dragStart = { x: e.pageX, y: e.pageY };
+            this.dragStartAngle = newAngle;
         }
     },
 
     mousedown: function(e) {
         var el = $(e.target);
         this.dragging = true;
-        this.dragStart = { x: e.pageX, y: e.pageY };
-
-        var center = { 
-            x: el.offset().left + el.width() / 2, 
-            y: el.offset().top + el.height() / 2 
-        };
-
-        var d = {
-            x: e.pageX - center.x,
-            y: e.pageY - center.y
-        };
-
-        console.log(mod(Math.atan2(d.y, d.x) / Math.PI * 180 + 90, 360)); 
+        this.dragStart = { x: e.pageX, y: e.pageY }; 
+        this.dragStartAngle = this.angleFromCenter(e.pageX, e.pageY);
     },
 
     mouseup: function(e) { this.dragging = false; },
@@ -72,10 +68,25 @@ $.extend(Game.prototype, {
         var that = this;
         this.modifyRegion(layerName, amount);
         this.buttonTimer = setInterval(
-            function() { that.modifyRegion(layerName, amount); }, 100);
+            function() { that.modifyRegion(layerName, amount); }, 50);
     },
     
     buttonup: function(e) { clearInterval(this.buttonTimer); },
+
+    angleFromCenter: function(x, y) {
+        var el = $(this.gl.canvas);
+        var center = { 
+            x: el.offset().left + el.width() / 2, 
+            y: el.offset().top + el.height() / 2 
+        };
+
+        var d = {
+            x: x - center.x,
+            y: y - center.y
+        };
+
+        return mod(Math.atan2(d.y, d.x) / Math.PI * 180 + 90, 360);
+    },
 
     start: function() {
         $("#gameContainer").append(this.gl.canvas);
@@ -84,7 +95,7 @@ $.extend(Game.prototype, {
     },
 
     modifyRegion: function(layer, amount) {
-        this.world.modifyRegion(this.state.activeSlice, layer, amount / 10);
+        this.world.modifyRegion(layer, this.state.activeSlice, amount / 10);
     },
 
     selectRegion: function(newSlice) {

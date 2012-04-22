@@ -18,13 +18,12 @@
 <script type="text/javascript" src="game.js"></script>
 </head>
 <body>
-<h1>Game Title</h1>
 <div id="gameContainer">
 <ul id="controls"></ul>
 <script>
 $.each(["cloud", "water", "dirt", "rock", "magma"], function(i, layer) {
     $("#controls").append(
-        $("<li>").data("layer", layer)
+        $("<li>").addClass(layer).data("layer", layer)
             .append($("<p>").text(layer))
             .append("<input type='button' class='plus button' value='+'>")
             .append("<input type='button' class='minus button' value='-'>"));
