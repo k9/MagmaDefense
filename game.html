@@ -21,6 +21,9 @@
 </head>
 <body>
 <div id="gameContainer">
+<ul id="counter">
+    <span class='count'></span><span>Missiles Left</span>   
+</ul>
 <ul id="controls">
 <li data-layer='dirt' class='dirt button' style="background: rgb(105, 77, 64)">
     <span class='count'>A</span>
@@ -34,10 +37,23 @@
     <span class='count'>D</span>
     <span class='magma'>Add Magma</span>
 </li>
+<li data-layer='water' class='water button' style="background: rgb(100, 100, 255)">
+    <span class='count'>F</span>
+    <span class='water'>Add All</span>
+</li>
 </ul>
+
+<div class="tutorial screen"><h2>Tutorial</h2><h3>Click to continue</h3></div>
+<div class="level screen"><h2>Level 1</h2><h3>Click to continue</h3></div>
+<div class="tryAgain screen"><h2>Try Again</h2><h3>Click to continue</h3></div>
+<div class="finish screen"><h2>Victory is Yours</h2></div>
+<div class="focus screen"><h2>Click Here to Play</h2><h3>Click to continue</h3></div>
 <script>
 window.game = new Game();
-game.start();
+$(".tutorial.screen").show().click(function() {
+    $(this).hide();
+    game.start(0);
+});
 </script>
 </body>
 </html>

@@ -13,7 +13,7 @@ function World(slices) {
         function(i) { return 15 + Math.random() * 10; }, 
         bumpyInterp); 
 
-    this.water = new WaterLayer(this, slices, -5, 10, 10, 10);   
+    this.water = new WaterLayer(this, slices, -5, 0, 0, 0);   
 
     this.gold = new WaterLayer(this, slices, -5, 0, 15, 15);
 
@@ -38,16 +38,16 @@ $.extend(World.prototype, {
     },
 
     makeMeshes: function() {
-        var dirtMin = 1000000;
+        var dirtSum = 0;
         for(var i = 0; i < this.slices; i++) {
             this.magma.totalRadii[i] = this.magma.radii[i] + this.gold.height;
             this.rock.totalRadii[i] = this.rock.radii[i] + this.magma.totalRadii[i];
             this.dirt.totalRadii[i] = this.dirt.radii[i] + this.rock.totalRadii[i];
-            dirtMin = Math.min(dirtMin, this.dirt.totalRadii[i]);
+            dirtSum += this.dirt.totalRadii[i];
         }
 
         this.gold.startAt = 0;
-        this.water.startAt = dirtMin;
+        this.water.startAt = dirtSum / this.slices;
 
         this.gold.makeMesh();
         this.magma.makeMesh();

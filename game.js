@@ -1,38 +1,36 @@
 window.Game = function() {
     this.gl = GL.create();
     $(this.gl.canvas).css({ width: "100%", height: "100%" });
-    this.gl.ondraw = render;
-    this.gl.onupdate = bindFn(this.tick, this);
     this.shaders = new Shaders();
-    this.worldSlices = 12;
-    this.world = new World(this.worldSlices);
-    this.missile = new Missile(this, this.world);
-    this.countDown = 1;
-    this.countDownSpeed = 10;
-    this.state = new GameState(this);
-    this.selectRegion(0, 0);
-    this.dragging = false;
-    this.dragStart = { x: 0, y: 0 };
-    this.secondsElapsed = 0;   
-    this.elapsed = 0;
-    this.frames = 0;
+    this.worldSlices = 16;
+
+    this.currentLevel = 0;
+    this.levels = [
+        { missiles: 3, speed: 120 },
+        { missiles: 5, speed: 150 },
+        { missiles: 7, speed: 200 }
+    ];
 
     var that = this;
     $(document).on({
         keydown: function(e) { that.keyChange(e.keyCode, true); },
         keyup: function(e) { that.keyChange(e.keyCode, false); }
     });
+
+    $("#gameContainer").append(this.gl.canvas);
+    setupRender(this.gl);
+    this.gl.animate();
 };
 
 function GameState(game) {
-    this.credits = { dirt: 0, rock: 0, magma: 0 };
+    this.credits = { dirt: 0, rock: 0, magma: 0, water: 0 };
     this.cameraElevation = 90;
     this.cameraAngle = 0;
     this.activeSlice = 0;
 }
 
 $.extend(Game.prototype, {
-    keys: { left: 37, right: 39, A: 65, S: 83, D: 68},
+    keys: { left: 37, right: 39, A: 65, S: 83, D: 68, F: 70},
 
     keyChange: function(code, pressed) {
         if(pressed) {
@@ -41,28 +39,82 @@ $.extend(Game.prototype, {
             if(code == this.keys.A) this.addToRegion("dirt");
             if(code == this.keys.S) this.addToRegion("rock");
             if(code == this.keys.D) this.addToRegion("magma");
+            if(code == this.keys.F) this.addToAll();
         }
     },
 
-    addToRegion: function(name, amount) {
-        if(this.state.credits[name] == 3) {
-            this.world[name].modifyAll(20);
+    addToAll: function() {
+        if(this.state.credits["water"] == 3) {
+            this.world["dirt"].modifyAll(3, 1);
+            this.world["rock"].modifyAll(3, 1);
+            this.world["magma"].modifyAll(3, 1);
             this.world.makeMeshes();
-            this.state.credits[name] = 0;
+            this.state.credits["water"] = 0;
         }
+        else
+            this.state.credits["water"] = 0;
         this.updateControls();
     },
 
-    start: function() {
-        $("#gameContainer").append(this.gl.canvas);
-        setupRender(this.gl);
-        this.gl.animate();
+    addToRegion: function(name) {
+        if(this.state.credits[name] == 3) {
+            this.world[name].modifyAll(9, 3);
+            this.world.makeMeshes();
+            this.state.credits[name] = 0;
+        }
+        else
+            this.state.credits[name] = 0;
+        this.updateControls();
+    },
+
+    start: function(levelChange) {
+        this.currentLevel += levelChange;
+        if(this.currentLevel >= this.levels.length) {
+            this.finish();
+            return;
+        }
+
+        this.missiles = this.levels[this.currentLevel].missiles;
+        this.speed = this.levels[this.currentLevel].speed;
+        this.world = new World(this.worldSlices);
+        this.missile = new Missile(this, this.world);
+        this.state = new GameState(this);
+        this.selectRegion(0, 0);
+        this.dragging = false;
+        this.dragStart = { x: 0, y: 0 };
+        this.secondsElapsed = 0;   
+        this.elapsed = 0;
+        this.frames = 0;
+
+        var that = this;
+        $(".level.screen").find("h2").text("Level " + (1 + this.currentLevel)).end()
+            .show().click(function() {
+            $(this).hide();
+
+            that.gl.ondraw = render;
+            that.gl.onupdate = bindFn(that.tick, that);
+        });
+    },
+
+    finish: function() {
+        $(".finish.screen").show();
     },
 
     lose: function() {
         this.gl.ondraw = null;
         this.gl.onupdate = null;
-    },  
+
+        $(".tryAgain.screen").show().click(function() {
+            $(this).hide();
+            game.start(0);
+        });
+    },
+
+    win: function() {
+        this.gl.ondraw = null;
+        this.gl.onupdate = null;
+        game.start(1);
+    },    
 
     selectRegion: function(newSlice) {
         this.state.activeSlice = mod(newSlice, this.worldSlices);
@@ -76,8 +128,9 @@ $.extend(Game.prototype, {
             var el = $(this);
             var layerName = el.data("layer");
 
-            el.css("opacity", [0.1, 0.3, 0.5, 1.0][that.state.credits[layerName]]);
+            el.css("opacity", [0.1, 0.2, 0.3, 1.0][that.state.credits[layerName]]);
         });
+        $("#counter .count").text(this.missiles);
     },
 
     tick: function(seconds) {
@@ -98,13 +151,12 @@ $.extend(Game.prototype, {
 
         if(game.missile.active)
             this.missile.update(seconds);
-        else if(game.countDown > 0) {
-            game.countDown -= seconds * this.countDownSpeed;
-            if(game.countDown < 0) {
-                var next = ["dirt", "rock", "magma", "fusion"][Math.floor(Math.random() * 4)];
-                this.missile.start(this.state.activeSlice, next);
-                game.countDown = 1;
-            }
+        else {
+            var next = ["dirt", "rock", "magma", "fusion"][Math.floor(Math.random() * 4)];
+            this.missile.start(this.state.activeSlice, next);
+            this.missiles--;
+            if(this.missiles < 0) this.win();
+            else this.updateControls();
         }
     }
 });

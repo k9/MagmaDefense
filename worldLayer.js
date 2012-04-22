@@ -34,9 +34,9 @@ $.extend(WorldLayer.prototype, {
         this.mesh.compile();
     },
 
-    modifyAll: function(amount) {
+    modifyAll: function(amount, rnd) {
         for(var i = 0; i < this.radii.length; i++)
-            this.modifyRegion(i, amount);
+            this.modifyRegion(i, amount + Math.random() * rnd);
     },
 
     modifyRegion: function(slice, amount) {

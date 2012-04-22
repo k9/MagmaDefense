@@ -5,7 +5,7 @@ function Missile(game, world) {
     this.active = false;
     this.height = 0;
     
-    this.sliceDamage = 10;
+    this.sliceDamage = 15;
 
     this.mesh = CSG.cylinder({
         slices: 8,
@@ -34,10 +34,18 @@ $.extend(Missile.prototype, {
         this.slice = slice;
         this.height = worldHeight;
         this.active = true;
+        this.submerged = false;
     },
 
     update: function(seconds) {
-        this.height -= seconds * 75;
+        var inWater = this.height < this.world["water"].totalSliceHeight();
+        if(inWater && !this.submerged) {
+            this.submerged = true;
+            game.state.credits["water"] = Math.min(3, game.state.credits["water"] + 1);
+            game.updateControls();
+        }
+        
+        this.height -= inWater ? seconds * game.speed / 2 : seconds * game.speed;
 
         var that = this;
         var changed = false;
@@ -50,7 +58,7 @@ $.extend(Missile.prototype, {
                     return;
                 }
 
-                var damage = that.sliceDamage;
+                var damage = inWater ? that.sliceDamage / 2 : that.sliceDamage;
                 if(that.type == "fusion" || that.type == name)
                     damage *= 4;
                 else {
